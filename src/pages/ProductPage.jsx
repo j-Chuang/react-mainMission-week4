@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from "react"
 import axios from "axios";
 import { Modal } from 'bootstrap';
+import Pagination from "../components/pagination";
+
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH
@@ -22,6 +24,7 @@ const defaultModalState = {
 function ProductPage ({setIsAuth}) {
 
 const [products, setProducts] = useState([]); // 產品狀態
+const fileInputRef = useRef(null); // 用 ref 來獲取 上傳圖片<input> DOM 元素
 
   // 透過 useRef 取得 DOM
   const productModalRef = useRef(null)
@@ -65,6 +68,7 @@ const [products, setProducts] = useState([]); // 產品狀態
   const handleCloseProductModal = () => {
     const modalInstance = Modal.getInstance(productModalRef.current);
     modalInstance.hide();
+    fileInputRef.current.value = ""; // 清空上傳圖片欄位
   }
 
   // 開啟刪除modal
@@ -131,16 +135,18 @@ const [products, setProducts] = useState([]); // 產品狀態
   // 戳新增產品api
   const createProduct = async () => {
     try {
-      await axios.post(`${BASE_URL}/v2/api/${API_PATH}/admin/product`,{
+      const res = await axios.post(`${BASE_URL}/v2/api/${API_PATH}/admin/product`,{
         data: {
           ...tempProduct,
           origin_price: Number(tempProduct.origin_price),
           price: Number(tempProduct.price),
           is_enabled: tempProduct.is_enabled ? 1 : 0
         }
-      })      
-    } catch (error) {
-      alert('新增產品失敗')
+      })  
+      return res  
+    } catch (error) {      
+      alert(error.response.data.message)
+      return error
     }
   }
 
@@ -154,9 +160,11 @@ const [products, setProducts] = useState([]); // 產品狀態
           price: Number(tempProduct.price),
           is_enabled: tempProduct.is_enabled ? 1 : 0
         }
-      })      
+      })  
+      return res    
     } catch (error) {
-      alert('編輯產品失敗')
+      alert(error.response.data.message)
+      return error
     }
   }
 
@@ -173,11 +181,13 @@ const [products, setProducts] = useState([]); // 產品狀態
   const handleUpdateProduct = async () => {
     const apiCall = modalMode === 'create' ? createProduct : updateProduct ;
     try {
-      await apiCall();
-
+      const res = await apiCall();
+      console.log("API Response:", res);
       getProducts();
       
-      handleCloseProductModal();
+      if (res.status === 200) {
+        handleCloseProductModal();
+      }
     } catch (error) {
       alert('更新產品失敗')
     }
@@ -243,7 +253,8 @@ const [products, setProducts] = useState([]); // 產品狀態
   const  [pageInfo, setPageInfo] = useState({});
 
   // 處理切換分頁
-  const handlePageChange = (page) => {
+  const handlePageChange = (e, page) => {
+    e.preventDefault();
     getProducts(page);
   }
 
@@ -283,31 +294,7 @@ const [products, setProducts] = useState([]); // 產品狀態
             </tbody>
           </table>
         </div>
-        <div className="d-flex justify-content-center">
-          <nav>
-            <ul className="pagination">
-              <li className={`page-item ${!pageInfo.has_pre && 'disabled'}`}>
-                <a onClick={()=>{handlePageChange(pageInfo.current_page - 1)}} className="page-link" href="#">
-                  上一頁
-                </a>
-              </li>
-
-              {Array.from({length: pageInfo.total_pages}).map((_,index) =>{
-                return (<li key={index} className={`page-item ${pageInfo.current_page === index + 1 && 'active'}`}>
-                  <a onClick={()=>{handlePageChange(index + 1)}} className="page-link" href="#">
-                    {index + 1}
-                  </a>
-                </li>)
-              })}
-              
-              <li className={`page-item ${!pageInfo.has_next && 'disabled'}`}>
-                <a onClick={()=>{handlePageChange(pageInfo.current_page + 1)}} className="page-link" href="#">
-                  下一頁
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </div>
+        <Pagination pageInfo={pageInfo} handlePageChange={handlePageChange}></Pagination>
       </div>
     </div>
     
@@ -325,10 +312,11 @@ const [products, setProducts] = useState([]); // 產品狀態
               <div className="mb-5">
                 <label htmlFor="fileInput" className="form-label"> 圖片上傳 </label>
                 <input
+                  ref={fileInputRef}
                   type="file"
                   accept=".jpg,.jpeg,.png"
                   className="form-control"
-                  id="fileInput"
+                  id="fileInput"                  
                   onChange={handleFileChange}
                 />
               </div>
@@ -450,6 +438,7 @@ const [products, setProducts] = useState([]); // 產品狀態
                       type="number"
                       className="form-control"
                       placeholder="請輸入原價"
+                      min={0}
                     />
                   </div>
                   <div className="col-6">
@@ -464,6 +453,7 @@ const [products, setProducts] = useState([]); // 產品狀態
                       type="number"
                       className="form-control"
                       placeholder="請輸入售價"
+                      min={0}
                     />
                   </div>
                 </div>
