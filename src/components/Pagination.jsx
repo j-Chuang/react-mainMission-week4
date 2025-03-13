@@ -5,23 +5,23 @@ function Pagination ({pageInfo, handlePageChange}) {
         <nav>
           <ul className="pagination">
             <li className={`page-item ${!pageInfo.has_pre && 'disabled'}`}>
-              <a onClick={(e)=>{handlePageChange(e, pageInfo.current_page - 1)}} className="page-link" href="#">
+              <button type="button" onClick={()=>{handlePageChange( pageInfo.current_page - 1)}} className="page-link" href="#">
                 上一頁
-              </a>
+              </button>
             </li>
 
             {Array.from({length: pageInfo.total_pages}).map((_,index) =>{
               return (<li key={index} className={`page-item ${pageInfo.current_page === index + 1 && 'active'}`}>
-                <a onClick={(e)=>{handlePageChange(e, index + 1)}} className="page-link" href="#">
+                <button type="button" onClick={()=>{handlePageChange( index + 1)}} className="page-link" href="#">
                   {index + 1}
-                </a>
+                </button>
               </li>)
             })}
             
             <li className={`page-item ${!pageInfo.has_next && 'disabled'}`}>
-              <a onClick={(e)=>{handlePageChange(e, pageInfo.current_page + 1)}} className="page-link" href="#">
+              <button type="button" onClick={()=>{handlePageChange( pageInfo.current_page + 1)}} className="page-link" href="#">
                 下一頁
-              </a>
+              </button>
             </li>
           </ul>
         </nav>

@@ -153,7 +153,7 @@ const fileInputRef = useRef(null); // 用 ref 來獲取 上傳圖片<input> DOM 
   // 戳更新單一產品api
   const updateProduct = async () => {
     try {
-      await axios.put(`${BASE_URL}/v2/api/${API_PATH}/admin/product/${tempProduct.id}`,{
+      const res = await axios.put(`${BASE_URL}/v2/api/${API_PATH}/admin/product/${tempProduct.id}`,{
         data: {
           ...tempProduct,
           origin_price: Number(tempProduct.origin_price),
@@ -182,7 +182,6 @@ const fileInputRef = useRef(null); // 用 ref 來獲取 上傳圖片<input> DOM 
     const apiCall = modalMode === 'create' ? createProduct : updateProduct ;
     try {
       const res = await apiCall();
-      console.log("API Response:", res);
       getProducts();
       
       if (res.status === 200) {
@@ -240,7 +239,6 @@ const fileInputRef = useRef(null); // 用 ref 來獲取 上傳圖片<input> DOM 
     try {
       const res = await axios.post(`${BASE_URL}/v2/api/${API_PATH}/admin/upload`,formData);
       const uploadedImageUrl = res.data.imageUrl;
-      console.log(uploadedImageUrl)
       setTempProduct({
         ...tempProduct,
         imageUrl: uploadedImageUrl
@@ -253,8 +251,7 @@ const fileInputRef = useRef(null); // 用 ref 來獲取 上傳圖片<input> DOM 
   const  [pageInfo, setPageInfo] = useState({});
 
   // 處理切換分頁
-  const handlePageChange = (e, page) => {
-    e.preventDefault();
+  const handlePageChange = (page) => {
     getProducts(page);
   }
 
