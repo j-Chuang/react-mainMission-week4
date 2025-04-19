@@ -21,7 +21,7 @@ const defaultModalState = {
 };
 
 
-function ProductPage ({setIsAuth}) {
+function ProductPage () {
 
 const [products, setProducts] = useState([]); // 產品狀態
 const fileInputRef = useRef(null); // 用 ref 來獲取 上傳圖片<input> DOM 元素
@@ -234,7 +234,7 @@ const fileInputRef = useRef(null); // 用 ref 來獲取 上傳圖片<input> DOM 
     formData.append('file-to-upload',file);
 
     // console.log(formData) // chrome顯示為空
-    // console.log([...formData]); // 這樣才有顯示
+    // console.log([...formData]); // 這樣才有顯示。特殊的物件，它不是陣列，也不是一般的 {} 物件
 
     try {
       const res = await axios.post(`${BASE_URL}/v2/api/${API_PATH}/admin/upload`,formData);
