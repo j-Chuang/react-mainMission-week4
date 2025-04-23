@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Modal } from "bootstrap";
 import { useEffect, useRef } from "react";
+import PropTypes from "prop-types";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
@@ -94,3 +95,12 @@ function DelProductModal({ tempProduct, getProducts, isOpen, setIsOpen }) {
 }
 
 export default DelProductModal;
+
+DelProductModal.propTypes = {
+  tempProduct: PropTypes.shape({
+    id: PropTypes.string,
+  }),
+  getProducts: PropTypes.func,
+  isOpen: PropTypes.bool,
+  setIsOpen: PropTypes.func,
+};

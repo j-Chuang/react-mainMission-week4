@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Modal } from "bootstrap";
 import { useEffect, useRef } from "react";
+import PropTypes from "prop-types";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
@@ -159,8 +160,9 @@ function ProductModal({
       <div
         ref={productModalRef}
         id="productModal"
-        className="modal"
+        className="modal fade"
         style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        tabIndex="-1"
       >
         <div className="modal-dialog modal-dialog-centered modal-xl">
           <div className="modal-content border-0 shadow">
@@ -419,3 +421,23 @@ function ProductModal({
 }
 
 export default ProductModal;
+
+ProductModal.propTypes = {
+  tempProduct: PropTypes.shape({
+    imageUrl: PropTypes.string,
+    title: PropTypes.string,
+    category: PropTypes.string,
+    unit: PropTypes.string,
+    origin_price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    description: PropTypes.string,
+    content: PropTypes.string,
+    is_enabled: PropTypes.oneOf([0, 1]),
+    imagesUrl: PropTypes.arrayOf(PropTypes.string),
+  }),
+  setTempProduct: PropTypes.func,
+  getProducts: PropTypes.func,
+  modalMode: PropTypes.string,
+  isOpen: PropTypes.bool,
+  setIsOpen: PropTypes.func,
+};
